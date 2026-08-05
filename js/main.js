@@ -1,3 +1,8 @@
+import imagenRobotGanador from "../imgs/ilustraciones/8.png";
+import imagenRobotTriste from "../imgs/ilustraciones/4.png";
+import imagenRobotMayor from "../imgs/ilustraciones/5.png";
+import imagenRobotInicial from "../imgs/ilustraciones/1.png";
+
 let numeroSecreto = 0;
 let contadorIntentos = 0;
 let listaNumeros = [];
@@ -20,29 +25,35 @@ function verificarIntento() {
         return;  // No permitir más intentos si el juego ha terminado
     }
 
-    let numeroUsuario = parseInt(document.getElementById("valorUsuario").value);
+    let inputUsuario = document.getElementById("valorUsuario");
+    let numeroUsuario = parseInt(inputUsuario.value);
+
+    if (inputUsuario.value.trim() === "" || Number.isNaN(numeroUsuario)) {
+        mostrarModalAdvertencia();
+        return;
+    }
 
     if (numeroUsuario === numeroSecreto) {
         asignarTexto("h6", `Has adivinado el número secreto en ${contadorIntentos} ${(contadorIntentos === 1) ? "Intento" : "Intentos"} ¡Eres un maestro de los números!`);
         var modalFelicitaciones = new bootstrap.Modal(document.getElementById('modalFelicitaciones'));
         modalFelicitaciones.show();
-        asignarImagen("imagen-robot", "/imgs/ilustraciones/8.png");
+        asignarImagen("imagen-robot", imagenRobotGanador);
         document.getElementById("reiniciar").removeAttribute("disabled");
 
         juegoTerminado = true;  // Juego ha terminado
     } else if (numeroUsuario > numeroSecreto) {
         asignarTexto("p", "El número es menor.");
-        asignarImagen("imagen-robot", "/imgs/ilustraciones/4.png");
+        asignarImagen("imagen-robot", imagenRobotTriste);
     } else {
         asignarTexto("p", "El número es mayor.");
-        asignarImagen("imagen-robot", "/imgs/ilustraciones/5.png");
+        asignarImagen("imagen-robot", imagenRobotMayor);
     }
 
     contadorIntentos++;
 
     if (contadorIntentos === 3 && numeroUsuario !== numeroSecreto) {
         // Mostrar una imagen diferente en el tercer intento (si no ha adivinado)
-        asignarImagen("imagen-robot", "/imgs/ilustraciones/5.png");
+        asignarImagen("imagen-robot", imagenRobotMayor);
     }
 
     if (contadorIntentos === 4) {
@@ -51,7 +62,7 @@ function verificarIntento() {
 
         if (numeroUsuario !== numeroSecreto) {
             modalGameOver.show();
-            asignarImagen("imagen-robot", "/imgs/ilustraciones/4.png");
+            asignarImagen("imagen-robot", imagenRobotTriste);
         }
 
         document.getElementById("reiniciar").removeAttribute("disabled");
@@ -90,10 +101,14 @@ function reiniciarJuego() {
     document.querySelector("#reiniciar").setAttribute("disabled", "true");
 }
 
+// Los controladores inline del HTML necesitan estas funciones en el ámbito global.
+window.verificarIntento = verificarIntento;
+window.reiniciarJuego = reiniciarJuego;
+
 function estadosIniciales() {
     asignarTexto("h1", "DESCUBRE EL <br> NÚMERO SECRETO");
     asignarTexto("p", `Indica un número del 1 al ${numeroMaximo}.`);
-    asignarImagen("imagen-robot", "/imgs/ilustraciones/1.png");
+    asignarImagen("imagen-robot", imagenRobotInicial);
     numeroSecreto = generaNumero();
     contadorIntentos = 1;
     juegoTerminado = false;  // Reiniciar el juego
